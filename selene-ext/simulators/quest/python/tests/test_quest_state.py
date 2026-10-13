@@ -39,10 +39,11 @@ def test_computational_basis_ordering():
 
 
 @pytest.mark.parametrize("angle", [0.1, np.pi / 4, np.pi / 3, np.pi / 2, np.pi])
-def test_superposition_preserves_global_phase(angle):
-    """Verify that get_global_state preserves complex global phase across angles,
+def test_superposition_without_phase_normalization(angle):
+    """Verify that get_global_state returns the underlying simulator statevector
 
-    unlike get_single_state which normalizes the first non-zero component to real positive.
+    without applying phase normalization, unlike get_single_state which
+    normalizes the first non-zero component to be real.
     """
     global_phase = np.exp(1j * angle)
     raw_state = np.zeros(4, dtype=np.complex128)
@@ -55,12 +56,12 @@ def test_superposition_preserves_global_phase(angle):
 
     result = state.get_global_state()
 
-    # Exact complex amplitudes must match with global phase intact
+    # Exact complex amplitudes match the underlying simulator statevector
     np.testing.assert_allclose(result, raw_state)
     assert np.isclose(result[0], global_phase / np.sqrt(2))
     assert np.isclose(result[3], global_phase * 1j / np.sqrt(2))
 
-    # Regression check: verify that get_single_state() destroys this global phase
+    # Regression check: verify that get_single_state() normalizes the phase of the first non-zero component
     # (when angle is not a multiple of 2*pi where phase is already real 1)
     if not np.isclose(np.sin(angle), 0.0) or np.isclose(np.cos(angle), -1.0):
         single_state = state.get_single_state()

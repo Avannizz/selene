@@ -168,8 +168,13 @@ class SeleneQuestState:
 
     def get_global_state(self) -> np.ndarray:
         """
-        Get the global state vector, permuted according to user-specified qubits,
-        preserving global phase.
+        Get the global state vector from the simulator, permuted according to
+        user-specified qubits, without applying phase normalization during extraction.
+
+        Note:
+        This preserves the complex amplitudes and phase of the underlying simulator
+        statevector as extracted. However, Selene does not guarantee global-phase
+        preservation across compilation passes or runtime optimizations.
 
         Returns:
         -------
